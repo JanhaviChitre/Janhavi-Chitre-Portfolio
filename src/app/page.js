@@ -178,7 +178,7 @@ export default function Home() {
           </a>
 
           <a
-            href="/JanhaviResume.pdf"
+            href="/JanhaviChitreResume.pdf"
             download
             className="
               px-5 py-2
