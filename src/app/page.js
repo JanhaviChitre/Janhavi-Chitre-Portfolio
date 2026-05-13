@@ -1,65 +1,455 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+
+import { motion } from "framer-motion";
+
+import {
+  FaGithub,
+  FaLinkedin,
+  FaEnvelope,
+} from "react-icons/fa";
+
+const fadeInUp = {
+  hidden: {
+    opacity: 0,
+    y: 40,
+  },
+
+  visible: {
+    opacity: 1,
+    y: 0,
+  },
+};
 
 export default function Home() {
+  const [mouse, setMouse] = useState({ x: 0, y: 0 });
+  const [smoothMouse, setSmoothMouse] = useState({ x: 0, y: 0 });
+
+  const [particles, setParticles] = useState([]);
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setMouse({
+        x: e.clientX / window.innerWidth - 0.5,
+        y: e.clientY / window.innerHeight - 0.5,
+      });
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  useEffect(() => {
+    setParticles(
+      Array.from({ length: 40 }).map(() => ({
+        top: Math.random() * 100,
+        left: Math.random() * 100,
+        size: Math.random() * 2 + 1,
+      }))
+    );
+  }, []);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+  <main className="relative z-10 scroll-smooth min-h-screen text-white overflow-x-hidden">
+  {/* BACKGROUND */}
+  <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+    {/* base dark gradient */}
+    <div className="absolute inset-0 bg-[#05060a]" />
+
+    {/* aurora layer 1 */}
+    <div
+      className="absolute w-[900px] h-[900px] rounded-full blur-[120px]"
+      style={{
+        background:
+          "radial-gradient(circle, rgba(120,119,198,0.22), transparent 60%)",
+        transform: `translate(${smoothMouse.x * 140}px, ${smoothMouse.y * 140}px)`,
+        top: "-20%",
+        left: "-20%",
+      }}
+    />
+
+    {/* aurora layer 2 */}
+    <div
+      className="absolute w-[800px] h-[800px] rounded-full blur-[140px]"
+      style={{
+        background:
+          "radial-gradient(circle, rgba(56,189,248,0.14), transparent 60%)",
+        transform: `translate(${smoothMouse.x * -120}px, ${smoothMouse.y * -120}px)`,
+        bottom: "-20%",
+        right: "-20%",
+      }}
+    />
+
+    {/* particles */}
+    {particles.map((p, i) => {
+      const moveX = smoothMouse.x * (12 + (i % 5) * 2);
+      const moveY = smoothMouse.y * (12 + (i % 5) * 2);
+
+      return (
+        <div
+          key={i}
+          className="absolute rounded-full bg-white"
+          style={{
+            top: `${p.top}%`,
+            left: `${p.left}%`,
+
+            // 👇 ensure visibility (minimum size + slightly brighter)
+            width: `${Math.max(p.size, 1.5)}px`,
+            height: `${Math.max(p.size, 1.5)}px`,
+
+            opacity: 0.35 + (i % 3) * 0.15,
+
+            // 👇 smoother movement (less extreme drift)
+            transform: `translate(${moveX}px, ${moveY}px)`,
+            boxShadow: "0 0 6px rgba(255,255,255,0.3)",
+          }}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
+      );
+    })}
+  </div>
+      {/* NAVBAR */}
+      <nav className="fixed top-0 left-0 w-full flex justify-between items-center px-10 py-6 bg-white/5 border-b border-white/10 backdrop-blur-md z-50">
+
+        {/* LOGO */}
+
+        <h1 className="text-2xl font-bold tracking-wide">
+          JC
+        </h1>
+
+        {/* NAV LINKS */}
+
+        <div className="hidden md:flex items-center gap-10 text-sm md:text-base font-medium">
+
           <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            href="#about"
+            className="hover:text-purple-400 transition-all duration-300"
+          >
+            About
+          </a>
+
+          <a
+            href="#projects"
+            className="hover:text-purple-400 transition-all duration-300"
+          >
+            Projects
+          </a>
+
+          <a
+            href="#contact"
+            className="hover:text-purple-400 transition-all duration-300"
+          >
+            Contact
+          </a>
+
+          <a
+            href="/JanhaviResume.pdf"
+            download
+            className="
+              px-5 py-2
+              border border-purple-500/40
+              rounded-full
+              hover:bg-purple-500
+              transition-all duration-300
+            "
+          >
+            Resume
+          </a>
+
+        </div>
+      </nav>
+
+      {/* HERO SECTION */}
+
+      <section className="relative min-h-screen flex flex-col justify-center items-center text-center px-6">
+      <div className="absolute w-[400px] h-[400px] bg-purple-500/20 blur-3xl rounded-full"></div>
+
+        <motion.h1
+          variants={fadeInUp}
+          initial="hidden"
+          animate="visible"
+          transition={{ duration: 0.8 }}
+          className="text-5xl md:text-7xl font-bold"
+        >
+          Janhavi Chitre
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 1 }}
+          className="mt-6 text-gray-400 text-lg md:text-2xl max-w-2xl"
+        >
+          Artificial Intelligence & Data Science Student | Full-Stack Developer
+        </motion.p>
+
+        {/* SOCIAL ICON BUTTONS */}
+        <div className="flex gap-6 mt-10 relative z-10">
+          <a
+            href="https://github.com/JanhaviChitre"
             target="_blank"
             rel="noopener noreferrer"
+            className="flex items-center justify-center w-12 h-12 rounded-full border border-white/20 bg-white/5 hover:bg-purple-500/20 hover:border-purple-400 hover:scale-110 transition-all duration-300 cursor-pointer"
+            aria-label="GitHub"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
+            <FaGithub className="text-2xl" />
           </a>
+
           <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            href="https://www.linkedin.com/in/janhavi-chitre-aba085371/"
             target="_blank"
             rel="noopener noreferrer"
+            className="flex items-center justify-center w-12 h-12 rounded-full border border-white/20 bg-white/5 hover:bg-purple-500/20 hover:border-purple-400 hover:scale-110 transition-all duration-300 cursor-pointer"
+            aria-label="LinkedIn"
           >
-            Documentation
+            <FaLinkedin className="text-2xl" />
+          </a>
+
+          <a href="https://mail.google.com/mail/?view=cm&fs=1&to=janhavichitre@gmail.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center w-12 h-12 rounded-full border border-white/20 bg-white/5 hover:bg-purple-500/20 hover:border-purple-400 hover:scale-110 transition-all duration-300 cursor-pointer"
+            aria-label="Email"
+          >
+            <FaEnvelope className="text-2xl" />
+          </a>
+
+        </div>
+
+        {/* BUTTONS */}
+
+        <div className="flex gap-4 mt-10">
+
+          <a
+            href="#projects"
+            className="px-6 py-3 bg-white text-black rounded-2xl font-semibold hover:scale-105 transition"
+          >
+            View Projects
+          </a>
+
+          <a
+            href="#contact"
+            className="px-6 py-3 border border-white rounded-2xl hover:bg-white hover:text-black transition"
+          >
+            Contact Me
           </a>
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* ABOUT SECTION */}
+
+      <section
+        id="about"
+        className="scroll-mt-24 min-h-screen flex flex-col justify-start pt-32 px-10 md:px-24"
+      >
+
+        <motion.h2
+          variants={fadeInUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-4xl md:text-6xl font-bold mb-8"
+        >
+          About Me
+        </motion.h2>
+
+        <motion.p
+          whileInView={{ opacity: 1 }}
+          initial={{ opacity: 0 }}
+          transition={{ duration: 1 }}
+          className="text-gray-400 text-lg leading-8 max-w-4xl"
+        >
+          I am an AI & Data Science student with a strong interest in full-stack development, passionate about designing and building scalable, user-centric applications.
+          I focus on transforming data into meaningful, efficient, and real-world solutions using a data-driven approach.
+        </motion.p>
+      </section>
+
+      {/* SKILLS SECTION */}
+
+      <section className="min-h-screen px-10 md:px-24 py-24">
+
+        <motion.h2
+          variants={fadeInUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          transition={{ duration: 1 }}
+          className="text-4xl md:text-6xl font-bold mb-20"
+        >
+          Skills
+        </motion.h2>
+
+        <motion.div
+          className="grid grid-cols-2 md:grid-cols-4 gap-8"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          transition={{
+            staggerChildren: 0.15,
+          }}
+        >
+
+          {[
+            "React",
+            "Next.js",
+            "Node.js",
+            "MongoDB",
+            "Python",
+            "JavaScript",
+            "HTML",
+            "CSS",
+          ].map((skill, index) => (
+
+            <motion.div
+              key={index}
+              whileHover={{
+                scale: 1.06,
+                y: -8,
+              }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="
+                relative
+                overflow-hidden
+                bg-white/5
+                border border-white/10
+                backdrop-blur-lg
+                p-8
+                rounded-3xl
+                text-center
+                shadow-lg
+                hover:border-purple-500/30
+                transition-all
+              "
+            >
+
+              {/* BACKGROUND GLOW */}
+
+              <div className="absolute inset-0 bg-purple-500/5 blur-2xl"></div>
+
+              {/* CONTENT */}
+
+              <div className="relative z-10">
+
+                <div className="w-3 h-3 bg-purple-400 rounded-full mx-auto mb-4"></div>
+
+                <p className="text-xl font-semibold tracking-wide">
+                  {skill}
+                </p>
+
+              </div>
+
+            </motion.div>
+
+          ))}
+        </motion.div>
+      </section>
+
+      {/* PROJECTS SECTION */}
+      <section
+        id="projects"
+        className="px-10 md:px-24 pt-16 pb-24"
+      >
+
+        <h2 className="text-4xl md:text-6xl font-bold mb-16">
+          Projects
+        </h2>
+
+        <div className="grid md:grid-cols-2 gap-10">
+
+          {/* PROJECT CARD */}
+
+          <motion.div
+            whileHover={{scale: 1.03, y: -5}}
+            className="bg-[#111] border border-gray-800 p-8 rounded-3xl"
+          >
+
+            <h3 className="text-3xl font-bold">
+              RoadPulse
+            </h3>
+
+            <p className="mt-6 text-gray-400 leading-8">
+              A crowdsourced system that detects potholes and
+              road anomalies using smartphone sensors and
+              FastAPI backend processing.
+            </p>
+
+            <div className="flex gap-3 mt-8 flex-wrap">
+              <span className="bg-gray-800 px-4 py-2 rounded-full">
+                FastAPI
+              </span>
+
+              <span className="bg-gray-800 px-4 py-2 rounded-full">
+                Python
+              </span>
+
+              <span className="bg-gray-800 px-4 py-2 rounded-full">
+                AI
+              </span>
+            </div>
+          </motion.div>
+
+          {/* SECOND PROJECT */}
+
+          <motion.div
+            whileHover={{scale: 1.03, y: -5}}
+            className="bg-[#111] border border-gray-800 p-8 rounded-3xl"
+          >
+
+            <h3 className="text-3xl font-bold">
+              VCET EduPortal
+            </h3>
+
+            <p className="mt-6 text-gray-400 leading-8">
+              Full-stack college website built using Next.js
+              and MongoDB with responsive UI and backend integration.
+            </p>
+
+            <div className="flex gap-3 mt-8 flex-wrap">
+              <span className="bg-gray-800 px-4 py-2 rounded-full">
+                Next.js
+              </span>
+
+              <span className="bg-gray-800 px-4 py-2 rounded-full">
+                MongoDB
+              </span>
+
+              <span className="bg-gray-800 px-4 py-2 rounded-full">
+                React
+              </span>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* CONTACT SECTION */}
+
+      <section
+        id="contact"
+        className="scroll-mt-24 min-h-screen flex flex-col justify-start items-center text-center pt-32 px-6"
+      >
+
+        <h2 className="text-5xl font-bold">
+          Contact Me
+        </h2>
+
+        <p className="mt-6 text-gray-400 text-lg">
+          Let’s build something amazing together.
+        </p>
+
+        <a
+          href="mailto:janhavichitre@gmail.com"
+          className="mt-10 px-8 py-4 bg-white text-black rounded-2xl font-semibold hover:scale-105 transition"
+        >
+          Send Email
+        </a>
+      </section>
+
+    <footer className="border-t border-white/10 py-10 text-center text-gray-500">
+      <p>
+        © 2026 Janhavi Chitre. Built with Next.js & Tailwind CSS.
+      </p>
+    </footer>
+    </main>
   );
 }
