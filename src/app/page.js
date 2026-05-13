@@ -479,9 +479,9 @@ export default function Home() {
         </p>
 
         <form
-          ref={form}
-          onSubmit={sendEmail}
-          className="mt-10 flex flex-col gap-5 w-full max-w-md mx-auto"
+          action="https://formspree.io/f/xnjwrzbp"
+          method="POST"
+          className="mt-10 flex flex-col gap-4 w-full max-w-md"
         >
           <input
             type="text"
@@ -509,7 +509,7 @@ export default function Home() {
 
           <button
             type="submit"
-            className="w-full px-6 py-3 rounded-2xl font-semibold text-white
+            className="px-6 py-3 rounded-2xl font-semibold text-white
             bg-gradient-to-r from-purple-500/70 via-blue-500/60 to-cyan-500/60
             hover:scale-105 transition shadow-lg shadow-purple-500/20"
           >
