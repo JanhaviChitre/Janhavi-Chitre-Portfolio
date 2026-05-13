@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef} from "react";
 
 import { motion } from "framer-motion";
 
@@ -27,6 +27,37 @@ export default function Home() {
   const [smoothMouse, setSmoothMouse] = useState({ x: 0, y: 0 });
 
   const [particles, setParticles] = useState([]);
+  const form = useRef();
+  const sendEmail = (e) => {
+    e.preventDefault();
+
+    emailjs.sendForm(
+      "service_2pugzs4",
+      "template_xyz789",
+      form.current,
+      "pQwErTy123456"
+    ).then(() => {
+      alert("Email sent successfully!");
+      form.current.reset();
+    });
+  };
+
+  useEffect(() => {
+    let frame;
+
+    const animate = () => {
+      setSmoothMouse((prev) => ({
+        x: prev.x + (mouse.x - prev.x) * 0.08,
+        y: prev.y + (mouse.y - prev.y) * 0.08,
+      }));
+
+      frame = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => cancelAnimationFrame(frame);
+  }, [mouse]);
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -49,6 +80,10 @@ export default function Home() {
       }))
     );
   }, []);
+
+  const clearForm = () => {
+    form.current.reset();
+  };
 
   return (
   <main className="relative z-10 scroll-smooth min-h-screen text-white overflow-x-hidden">
@@ -89,7 +124,7 @@ export default function Home() {
       return (
         <div
           key={i}
-          className="absolute rounded-full bg-white"
+          className="absolute rounded-full bg-white/40 z-0"
           style={{
             top: `${p.top}%`,
             left: `${p.left}%`,
@@ -161,7 +196,7 @@ export default function Home() {
 
       {/* HERO SECTION */}
 
-      <section className="relative min-h-screen flex flex-col justify-center items-center text-center px-6">
+      <section className="relative z-20 min-h-screen flex flex-col justify-center items-center text-center px-6">
       <div className="absolute w-[400px] h-[400px] bg-purple-500/20 blur-3xl rounded-full"></div>
 
         <motion.h1
@@ -169,7 +204,7 @@ export default function Home() {
           initial="hidden"
           animate="visible"
           transition={{ duration: 0.8 }}
-          className="text-5xl md:text-7xl font-bold"
+          className="text-5xl md:text-7xl font-bold relative z-20"
         >
           Janhavi Chitre
         </motion.h1>
@@ -178,7 +213,7 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 1 }}
-          className="mt-6 text-gray-400 text-lg md:text-2xl max-w-2xl"
+          className="mt-6 text-gray-300 text-lg md:text-2xl max-w-2xl relative z-20"
         >
           Artificial Intelligence & Data Science Student | Full-Stack Developer
         </motion.p>
@@ -304,8 +339,8 @@ export default function Home() {
             <motion.div
               key={index}
               whileHover={{
-                scale: 1.06,
-                y: -8,
+                scale: 1.08,
+                y: -10,
               }}
               transition={{ type: "spring", stiffness: 300 }}
               className="
@@ -316,16 +351,22 @@ export default function Home() {
                 backdrop-blur-lg
                 p-8
                 rounded-3xl
-                text-center
                 shadow-lg
-                hover:border-purple-500/30
-                transition-all
+                transition-all duration-300
+
+                flex flex-col items-center justify-center
+                min-h-[120px]
+                text-center
+
+                hover:shadow-purple-500/30
+                hover:border-purple-400
+                hover:bg-white/10
               "
             >
 
               {/* BACKGROUND GLOW */}
 
-              <div className="absolute inset-0 bg-purple-500/5 blur-2xl"></div>
+              <div className="absolute inset-0 bg-purple-500/5" />
 
               {/* CONTENT */}
 
@@ -437,12 +478,44 @@ export default function Home() {
           Let’s build something amazing together.
         </p>
 
-        <a
-          href="mailto:janhavichitre@gmail.com"
-          className="mt-10 px-8 py-4 bg-white text-black rounded-2xl font-semibold hover:scale-105 transition"
+        <form
+          ref={form}
+          onSubmit={sendEmail}
+          className="mt-10 flex flex-col gap-5 w-full max-w-md mx-auto"
         >
-          Send Email
-        </a>
+          <input
+            type="text"
+            name="name"
+            placeholder="Your Name"
+            required
+            className="w-full p-3 rounded-xl text-white bg-white/5 border border-white/10 backdrop-blur-md outline-none focus:border-purple-400 transition"
+          />
+
+          <input
+            type="email"
+            name="email"
+            placeholder="Your Email"
+            required
+            className="w-full p-3 rounded-xl text-white bg-white/5 border border-white/10 backdrop-blur-md outline-none focus:border-purple-400 transition"
+          />
+
+          <textarea
+            name="message"
+            placeholder="Your Message"
+            rows="5"
+            required
+            className="w-full p-3 rounded-xl text-white bg-white/5 border border-white/10 backdrop-blur-md outline-none focus:border-purple-400 transition"
+          ></textarea>
+
+          <button
+            type="submit"
+            className="w-full px-6 py-3 rounded-2xl font-semibold text-white
+            bg-gradient-to-r from-purple-500/70 via-blue-500/60 to-cyan-500/60
+            hover:scale-105 transition shadow-lg shadow-purple-500/20"
+          >
+            Send Message
+          </button>
+        </form>
       </section>
 
     <footer className="border-t border-white/10 py-10 text-center text-gray-500">
